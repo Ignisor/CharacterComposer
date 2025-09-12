@@ -63,7 +63,7 @@ Response (shape):
     "mood": "serious | calm | excited | mysterious | sad | sinister | happy",
     "emotion": "tragic | emotional | neutral | playful",
     "accent": "british | american | spanish | ukrainian | default",
-    "language": "english | spanish | ukrainian | russian | german | default"
+    "language": "english | spanish | ukrainian | german | default"
   },
   "visual_prompt": "Short descriptive sentence (<= 25 words)",
   "music_mood": "dark orchestral | mystical ambient | heroic epic | melancholic piano | adventurous soundtrack | electronic futuristic | calm acoustic | default"

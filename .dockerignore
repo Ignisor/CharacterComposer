@@ -1,0 +1,23 @@
+# VCS
+.git
+.gitignore
+
+# Node
+**/node_modules
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS junk
+**/.DS_Store
+
+# Build/cache outputs (we rebuild inside Docker)
+**/build
+**/dist
+**/.cache
+**/.next
+**/.turbo
+
+# Dockerfiles
+Dockerfile*

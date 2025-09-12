@@ -5,13 +5,23 @@ import dotenv from "dotenv";
 import OpenAI from "openai";
 import axios from "axios";
 import FormData from "form-data";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Resolve __dirname in ESM and set path to CRA build output
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendBuildPath = path.join(__dirname, "../frontend/build");
+
 app.use(cors({ origin: "http://localhost:3000" }));
 app.use(bodyParser.json());
+
+// Serve static frontend assets
+app.use(express.static(frontendBuildPath));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -32,7 +42,7 @@ The structure of the JSON must be strictly as follows:
     "mood": "serious | calm | excited | mysterious | sad | sinister | happy",
     "emotion": "tragic | emotional | neutral | playful",
     "accent": "british | american | spanish | ukrainian | default",
-    "language": "english | spanish | ukrainian | russian | german | default"
+    "language": "english | spanish | ukrainian | german | default"
   },
   "visual_prompt": "Short descriptive sentence of the character's appearance, suitable for an AI image generator (max 25 words)",
   "music_mood": "dark orchestral | mystical ambient | heroic epic | melancholic piano | adventurous soundtrack | electronic futuristic | calm acoustic | default"
@@ -273,6 +283,11 @@ app.post("/generate-voice", async (req, res) => {
 //     res.status(500).json({ error: "Failed to generate music" });
 //   }
 // });
+
+// SPA fallback: serve index.html for all non-API GET requests
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendBuildPath, "index.html"));
+});
 
 /**
  * Start server
