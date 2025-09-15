@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Music, RotateCcw, Loader2 } from "lucide-react";
 import { BUTTON_VARIANT } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -9,12 +9,6 @@ export default function MusicSoundtrackPanel({
   isGenerating,
   onRegenerate,
 }) {
-    const [isPlaying, setIsPlaying] = useState(false);
-
-    const handlePlay = () => {
-        setIsPlaying(!isPlaying);
-    };
-
     return (
         <Card className="glass-card glow-border h-fit">
             <CardHeader>

@@ -70,11 +70,9 @@ export default function CharacterComposer() {
       
       // Generate filename with timestamp
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = characterTitle 
+      link.download = characterTitle
         ? `${characterTitle.replace(/[^a-zA-Z0-9]/g, '_')}_${timestamp}.png`
         : `character_image_${timestamp}.png`;
-      
-      link.download = filename;
       
       document.body.appendChild(link);
       link.click();
