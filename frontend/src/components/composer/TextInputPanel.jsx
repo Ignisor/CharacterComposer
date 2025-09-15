@@ -12,8 +12,13 @@ export default function TextInputPanel({ onAnalyze, isGenerating }) {
     const [description, setDescription] = useState("");
 
     const handleSubmit = () => {
-        if (!title.trim() || !description.trim()) return;
-        onAnalyze({ title: title.trim(), description: description.trim() });
+      const text = description.trim();
+
+      if (!text) {
+        return;
+      }
+
+      onAnalyze({ text });
     };
 
     return (
@@ -40,25 +45,30 @@ export default function TextInputPanel({ onAnalyze, isGenerating }) {
                 <CardContent className="space-y-6">
                    {/* Character Title */}
                     <div className="space-y-2">
-                        <Label className="text-white">Character Name/Title</Label>
+                        <Label htmlFor="character-title" className="text-white">Character Name/Title</Label>
                         <Input
+                            id="character-title"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="e.g., Elara the Shadow Blade"
                             className="bg-white/5 border-white/20 text-white placeholder:text-white/40 glow-border"
+                            aria-label="Character name or title"
                         />
                     </div>
 
                     {/* Character Description */}
                     <div className="space-y-2">
-                        <Label className="text-white">Character Description</Label>
+                        <Label htmlFor="character-description" className="text-white">Character Description</Label>
                         <Textarea
+                            id="character-description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="Describe your character's appearance, personality, voice, and atmosphere in rich detail..."
                             className="min-h-[200px] bg-white/5 border-white/20 text-white placeholder:text-white/40 glow-border resize-none"
+                            aria-label="Character description"
+                            aria-describedby="description-tip"
                         />
-                        <p className="text-xs text-white/40">
+                        <p id="description-tip" className="text-xs text-white/40">
                             Tip: Include details about appearance, clothing, voice tone, personality, and mood for best results
                         </p>
                     </div>
@@ -67,10 +77,8 @@ export default function TextInputPanel({ onAnalyze, isGenerating }) {
                     <motion.div className="text-center pt-4">
                         <Button
                             onClick={handleSubmit}
-                            disabled={!title.trim() || !description.trim() || isGenerating}
+                            disabled={!description.trim() || isGenerating}
                             className="glow-button text-white font-medium px-8 py-3 text-lg"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
                         >
                             {isGenerating ? (
                                 <>

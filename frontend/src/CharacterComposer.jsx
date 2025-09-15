@@ -1,71 +1,42 @@
 import React, { useState } from "react";
-import CharacterProject from "./entities/CharacterProject";
 import { Button, BUTTON_VARIANT } from "./components/ui/button";
 import { ArrowLeft, ArrowRight, Sparkles, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import TextInputPanel from "./components/composer/TextInputPanel";
-// import TraitSummary from "./components/composer/TraitSummary";
+import TraitSummary from "./components/composer/TraitSummary";
 // import GenerationPanels from "./components/composer/GenerationPanels";
 import StepIndicator from "./components/composer/StepIndicator";
-import {COMPOSER_STEPS} from "./utils/stepper";
+import {COMPOSER_STEPS} from "./constants/stepper";
+import {useApiLoading} from "./hooks/useApiLoading";
 
 export default function CharacterComposer() {
-    const [currentStep, setCurrentStep] = useState(COMPOSER_STEPS.BASE_CONFIG);
-    const [project, setProject] = useState(null);
-    const [isGenerating, setIsGenerating] = useState(false);
+  const [currentStep, setCurrentStep] = useState(COMPOSER_STEPS.BASE_CONFIG);
+  const [traits, setTraits] = useState(null);
+  const [image, setImage] = useState(null);
+  const [voiceOptions, setVoiceOptions] = useState(null);
+  const [music, setMusic] = useState(null);
 
-    const handleTextAnalysis = async (textData) => {
-        setIsGenerating(true);
-        try {
-            // Simulate AI analysis delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+  const { loadingStates, apiWithLoading } = useApiLoading();
 
-            // Create new project with analyzed traits
-            const newProject = await CharacterProject.create({
-                ...textData,
-                visual_traits: {
-                    age: "Mid-twenties",
-                    gender: "Female",
-                    physique: "Tall and athletic",
-                    hair_color: "Raven black",
-                    eye_color: "Emerald green",
-                    clothing_style: "Dark leather armor with silver accents",
-                    distinctive_features: "Scar across left cheek, glowing pendant"
-                },
-                vocal_traits: {
-                    voice_type: "Contralto",
-                    accent: "Slight elvish lilt",
-                    tone: "Confident and mysterious",
-                    pace: "Measured and deliberate",
-                    sample_dialogue: "The shadows whisper secrets that daylight cannot hear."
-                },
-                mood_atmosphere: {
-                    primary_mood: "Mysterious",
-                    genre: "Dark Fantasy",
-                    energy_level: "Medium-low",
-                    instruments: "Strings, ambient pads, ethereal vocals"
-                },
-                current_step: 2
-            });
+  const isAnyLoading = Object.values(loadingStates).some(loading => loading);
 
-            setProject(newProject);
-            setCurrentStep(COMPOSER_STEPS.ADVANCED_CONFIG);
-        } catch (error) {
-            console.error("Error creating project:", error);
-        }
-        setIsGenerating(false);
+  const handleTextAnalysis = async (textContent) => {
+      await apiWithLoading.analyzeCharacter(textContent, (data) => {
+        setTraits(data);
+        setCurrentStep(COMPOSER_STEPS.ADVANCED_CONFIG);
+      });
     };
 
     const handleTraitUpdate = async (updatedTraits) => {
-        if (!project) return;
+      await apiWithLoading.generateImage(updatedTraits.visual_prompt, setImage);
 
-        const updatedProject = await CharacterProject.update(project.id, {
-            ...updatedTraits,
-            current_step: 3
-        });
-        setProject(updatedProject);
-        setCurrentStep(COMPOSER_STEPS.RESULT);
+      const voiceText = "A new hand touches the beacon. Listen. Hear me and obey. A foul darkness has seeped into my temple. A darkness that you will destroy.";
+      await apiWithLoading.generateVoice(voiceText, updatedTraits.voice_traits, setVoiceOptions);
+
+      await apiWithLoading.generateMusic(updatedTraits.music_mood, setMusic);
+
+      setCurrentStep(COMPOSER_STEPS.RESULT);
     };
 
     const nextStep = () => {
@@ -77,8 +48,11 @@ export default function CharacterComposer() {
     };
 
     const resetWorkflow = () => {
-        setCurrentStep(COMPOSER_STEPS.BASE_CONFIG);
-        setProject(null);
+      setCurrentStep(COMPOSER_STEPS.BASE_CONFIG);
+      setTraits(null);
+      setImage(null);
+      setVoiceOptions(null);
+      setMusic(null);
     };
 
     return (
@@ -123,7 +97,7 @@ export default function CharacterComposer() {
                     <Button
                       variant={BUTTON_VARIANT.GHOST}
                       onClick={nextStep}
-                      disabled={currentStep === COMPOSER_STEPS.RESULT || !project}
+                      disabled={currentStep === COMPOSER_STEPS.RESULT || !traits}
                     >
                         Next
                         <ArrowRight className="w-4 h-4 ml-2" />
@@ -135,16 +109,16 @@ export default function CharacterComposer() {
                     {currentStep === COMPOSER_STEPS.BASE_CONFIG && (
                         <TextInputPanel
                             onAnalyze={handleTextAnalysis}
-                            isGenerating={isGenerating}
+                            isGenerating={isAnyLoading}
                         />
                     )}
 
-                {/*    {currentStep === COMPOSER_STEPS.ADVANCED_CONFIG && project && (*/}
-                {/*        <TraitSummary*/}
-                {/*            project={project}*/}
-                {/*            onUpdate={handleTraitUpdate}*/}
-                {/*        />*/}
-                {/*    )}*/}
+                    {currentStep === COMPOSER_STEPS.ADVANCED_CONFIG && (
+                        <TraitSummary
+                          traits={traits}
+                          onUpdate={handleTraitUpdate}
+                        />
+                    )}
 
                 {/*    {currentStep === COMPOSER_STEPS.RESULT && project && (*/}
                 {/*        <GenerationPanels project={project} />*/}

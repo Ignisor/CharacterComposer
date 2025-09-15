@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from "framer-motion";
 import { FileText, Settings, Sparkles } from "lucide-react";
-import {COMPOSER_STEPS} from "../../utils/stepper";
+import {COMPOSER_STEPS} from "../../constants/stepper";
 
 const steps = [
     {
