@@ -1,0 +1,5 @@
+export const COMPOSER_STEPS = {
+  BASE_CONFIG: 1,
+  ADVANCED_CONFIG: 2,
+  RESULT: 3,
+}
