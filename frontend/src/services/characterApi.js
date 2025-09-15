@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_ENDPOINTS } from '../constants/api';
+import { DEFAULT_VOICE_SAMPLE } from "../constants/traits";
 
 class CharacterAPI {
   async analyzeCharacter(text) {
@@ -14,9 +15,9 @@ class CharacterAPI {
     return response.data.image;
   }
 
-  async generateVoice(text, voiceTraits) {
+  async generateVoice(voiceTraits) {
     const response = await axios.post(API_ENDPOINTS.GENERATE_VOICE, { 
-      text, 
+      text: DEFAULT_VOICE_SAMPLE,
       voice_traits: voiceTraits 
     });
     return response.data.voice_options;
@@ -24,7 +25,7 @@ class CharacterAPI {
 
   async generateMusic(mood) {
     const response = await axios.post(API_ENDPOINTS.GENERATE_MUSIC, { mood });
-    return response.data.music || response.data.error;
+    return response.data.music;
   }
 }
 

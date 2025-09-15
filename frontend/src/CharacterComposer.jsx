@@ -3,22 +3,20 @@ import { Button, BUTTON_VARIANT } from "./components/ui/button";
 import { ArrowLeft, ArrowRight, Sparkles, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { COMPOSER_STEPS } from "./constants/stepper";
+import { useApiLoading } from "./hooks/useApiLoading";
 import TextInputPanel from "./components/composer/TextInputPanel";
 import TraitSummary from "./components/composer/TraitSummary";
 import GenerationPanels from "./components/composer/GenerationPanels";
 import StepIndicator from "./components/composer/StepIndicator";
-import {COMPOSER_STEPS} from "./constants/stepper";
-import {useApiLoading} from "./hooks/useApiLoading";
-
-// FIXME: add traits to steps 2 and 3
 
 export default function CharacterComposer() {
   const [currentStep, setCurrentStep] = useState(COMPOSER_STEPS.BASE_CONFIG);
   const [characterTitle, setCharacterTitle] = useState('');
   const [traits, setTraits] = useState(null);
-  const [image, setImage] = useState(null);
-  const [voiceOptions, setVoiceOptions] = useState(null);
-  const [music, setMusic] = useState(null);
+  const [image, setImage] = useState('');
+  const [voiceOptions, setVoiceOptions] = useState([]);
+  const [music, setMusic] = useState('');
 
   const { loadingStates, apiWithLoading } = useApiLoading();
 
@@ -36,8 +34,7 @@ export default function CharacterComposer() {
   };
 
   const onGenerateVoice = async (updatedTraits) => {
-    const voiceText = "A new hand touches the beacon. Listen. Hear me and obey. A foul darkness has seeped into my temple. A darkness that you will destroy.";
-    await apiWithLoading.generateVoice(voiceText, updatedTraits.voice_traits, setVoiceOptions);
+    await apiWithLoading.generateVoice(updatedTraits.voice_traits, setVoiceOptions);
   }
 
   const onGenerateMusic = async (updatedTraits) => {
@@ -53,11 +50,41 @@ export default function CharacterComposer() {
     setCurrentStep(COMPOSER_STEPS.RESULT);
   };
 
-  const onDownloadImage = () => {};
+  const onDownloadImage = async () => {
+    if (!image) {
+      console.warn('No image available to download');
+      return;
+    }
 
-  const onDownloadMusic = () => {};
+    try {
+      const response = await fetch(image);
+      if (!response.ok) {
+        throw new Error('Failed to fetch image');
+      }
 
-  const onDownloadVoice = () => {};
+      const blob = await response.blob();
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = characterTitle 
+        ? `${characterTitle.replace(/[^a-zA-Z0-9]/g, '_')}_${timestamp}.png`
+        : `character_image_${timestamp}.png`;
+      
+      link.download = filename;
+      
+      document.body.appendChild(link);
+      link.click();
+      
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+    }
+  };
 
   const nextStep = () => {
       if (currentStep < COMPOSER_STEPS.RESULT) setCurrentStep(currentStep + 1);
@@ -69,10 +96,11 @@ export default function CharacterComposer() {
 
   const resetWorkflow = () => {
       setCurrentStep(COMPOSER_STEPS.BASE_CONFIG);
+      setCharacterTitle('');
       setTraits(null);
-      setImage(null);
-      setVoiceOptions(null);
-      setMusic(null);
+      setImage('');
+      setVoiceOptions([]);
+      setMusic('');
     };
 
   return (
@@ -145,6 +173,7 @@ export default function CharacterComposer() {
 
                   {currentStep === COMPOSER_STEPS.RESULT && !!traits && (
                       <GenerationPanels
+                        traits={traits}
                         image={image}
                         voiceOptions={voiceOptions}
                         music={music}
@@ -155,8 +184,6 @@ export default function CharacterComposer() {
                         onRegenerateVoice={async () => onGenerateVoice(traits)}
                         onRegenerateMusic={async () => onGenerateMusic(traits)}
                         onDownloadImage={onDownloadImage}
-                        onDownloadMusic={onDownloadMusic}
-                        onDownloadVoice={onDownloadVoice}
                       />
                   )}
               </AnimatePresence>

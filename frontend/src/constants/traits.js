@@ -17,3 +17,5 @@ export const MUSIC_MOOD = [
   "calm acoustic",
   "default"
 ];
+
+export const DEFAULT_VOICE_SAMPLE = "A new hand touches the beacon. Listen. Hear me and obey. A foul darkness has seeped into my temple. A darkness that you will destroy.";

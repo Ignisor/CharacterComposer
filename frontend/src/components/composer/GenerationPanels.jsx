@@ -9,6 +9,7 @@ import VoicePlaybackPanel from "./VoicePlaybackPanel";
 import MusicSoundtrackPanel from "./MusicSoundtrackPanel";
 
 export default function GenerationPanels({
+  traits,
   image,
   voiceOptions,
   music,
@@ -19,8 +20,6 @@ export default function GenerationPanels({
   onRegenerateVoice,
   onRegenerateMusic,
   onDownloadImage,
-  onDownloadMusic,
-  onDownloadVoice,
 }) {
     return (
         <motion.div
@@ -38,7 +37,10 @@ export default function GenerationPanels({
             <div className="grid lg:grid-cols-3 gap-6">
                 {/* Character Image Panel */}
                 <CharacterImagePanel
-                  generatedContent={image}
+                  generatedContent={{
+                    url: image,
+                    prompt: traits.visual_prompt,
+                }}
                   isGenerating={loadingStates[API_OPERATIONS.GENERATING_IMAGE]}
                   onRegenerate={onRegenerateImage}
                   onDownloadImage={onDownloadImage}
@@ -49,7 +51,6 @@ export default function GenerationPanels({
                   generatedContent={voiceOptions}
                   isGenerating={loadingStates[API_OPERATIONS.GENERATING_VOICE]}
                   onRegenerate={onRegenerateVoice}
-                  onDownloadVoice={onDownloadVoice}
                 />
 
                 {/* Music Soundtrack Panel */}
@@ -57,7 +58,6 @@ export default function GenerationPanels({
                   generatedContent={music}
                   isGenerating={loadingStates[API_OPERATIONS.GENERATING_MUSIC]}
                   onRegenerate={onRegenerateMusic}
-                  onDownloadMusic={onDownloadMusic}
                 />
             </div>
 

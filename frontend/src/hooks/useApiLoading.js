@@ -51,10 +51,10 @@ export const useApiLoading = () => {
       );
     },
 
-    generateVoice: (text, traits, onSuccess) => {
+    generateVoice: (traits, onSuccess) => {
       return makeRequest(
         API_OPERATIONS.GENERATING_VOICE,
-        () => characterAPI.generateVoice(text, traits),
+        () => characterAPI.generateVoice(traits),
         onSuccess
       );
     },
