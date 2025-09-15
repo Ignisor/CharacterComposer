@@ -7,8 +7,12 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Sparkles, Feather, Loader2 } from "lucide-react";
 
-export default function TextInputPanel({ onAnalyze, isGenerating }) {
-    const [title, setTitle] = useState("");
+export default function TextInputPanel({
+  onAnalyze,
+  isGenerating ,
+  characterTitle,
+  setCharacterTitle,
+}) {
     const [description, setDescription] = useState("");
 
     const handleSubmit = () => {
@@ -48,8 +52,8 @@ export default function TextInputPanel({ onAnalyze, isGenerating }) {
                         <Label htmlFor="character-title" className="text-white">Character Name/Title</Label>
                         <Input
                             id="character-title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            value={characterTitle}
+                            onChange={(e) => setCharacterTitle(e.target.value)}
                             placeholder="e.g., Elara the Shadow Blade"
                             className="bg-white/5 border-white/20 text-white placeholder:text-white/40 glow-border"
                             aria-label="Character name or title"

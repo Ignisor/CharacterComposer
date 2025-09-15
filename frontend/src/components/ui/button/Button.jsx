@@ -6,7 +6,7 @@ export const BUTTON_VARIANT = {
 
 const STYLES_BY_VARIANT = {
   [BUTTON_VARIANT.PRIMARY]: 'bg-primary hover:bg-primary/90 h-10',
-  [BUTTON_VARIANT.OUTLINE]: '',
+  [BUTTON_VARIANT.OUTLINE]: 'bg-white/5 border border-white/20 hover:bg-white/10 text-sm font-medium ',
   [BUTTON_VARIANT.GHOST]: 'text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 disabled:hover:bg-transparent',
 };
 

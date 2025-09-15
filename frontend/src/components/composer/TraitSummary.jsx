@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from "framer-motion";
-import { ArrowRight, FileSliders} from "lucide-react";
+import { ArrowRight, FileSliders, Loader2 } from "lucide-react";
 import { MUSIC_MOOD, VOICE_TRAITS } from "../../constants/traits";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Button } from "../ui/button";
@@ -8,7 +8,7 @@ import { Label } from "../ui/label";
 import {Select, SelectItem} from "../ui/select";
 import { Textarea } from "../ui/textarea";
 
-export default function TraitSummary({ traits, onUpdate }) {
+export default function TraitSummary({ traits, onUpdate, isLoading }) {
   const [vocalTraits, setVocalTraits] = useState(traits?.voice_traits || {});
   const [moodAtmosphere, setMoodAtmosphere] = useState(traits?.music_mood || "default");
   const [visualTraits, setVisualTraits] = useState(traits?.visual_prompt || "");
@@ -77,7 +77,7 @@ export default function TraitSummary({ traits, onUpdate }) {
 
         <CardContent className="space-y-4">
           <div className="grid lg:grid-cols-2 gap-4">
-            {voiceTraitsInputs.map(({field, label, options}, index) => (
+            {voiceTraitsInputs.map(({field, label, options}) => (
               <div key={field} className="space-y-2">
                 <Label htmlFor={`voice-trait-${field}`} className="text-white">{label}</Label>
                 <Select
@@ -124,9 +124,19 @@ export default function TraitSummary({ traits, onUpdate }) {
             <Button
               onClick={handleContinue}
               className="glow-button text-white font-medium px-8 py-3 text-lg"
+              disabled={isLoading}
             >
-              Continue to Generation
-              <ArrowRight className="w-5 h-5 ml-3" />
+              {isLoading ? (
+                <>
+                  Generating Character...
+                  <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+                </>
+              ) : (
+                <>
+                  Continue to Generation
+                  <ArrowRight className="w-5 h-5 ml-3" />
+                </>
+              )}
             </Button>
           </div>
         </CardContent>
