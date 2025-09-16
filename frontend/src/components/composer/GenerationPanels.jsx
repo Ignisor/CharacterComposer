@@ -9,6 +9,7 @@ import VoicePlaybackPanel from "./VoicePlaybackPanel";
 import MusicSoundtrackPanel from "./MusicSoundtrackPanel";
 
 export default function GenerationPanels({
+    characterTitle,
     traits,
     image,
     voiceOptions,
@@ -49,6 +50,7 @@ export default function GenerationPanels({
 
                 {/* Voice Playback Panel */}
                 <VoicePlaybackPanel
+                    characterTitle={characterTitle}
                     generatedContent={voiceOptions}
                     isGenerating={loadingStates[API_OPERATIONS.GENERATING_VOICE]}
                     onRegenerate={onRegenerateVoice}
@@ -57,6 +59,7 @@ export default function GenerationPanels({
 
                 {/* Music Soundtrack Panel */}
                 <MusicSoundtrackPanel
+                    characterTitle={characterTitle}
                     generatedContent={music}
                     isGenerating={loadingStates[API_OPERATIONS.GENERATING_MUSIC]}
                     onRegenerate={onRegenerateMusic}

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 
 export default function MusicSoundtrackPanel({
+  characterTitle,
   generatedContent,
   isGenerating,
   onRegenerate,
@@ -25,7 +26,7 @@ export default function MusicSoundtrackPanel({
             <CardContent className="space-y-4">
                 {/* Music Generation Status */}
                 {generatedContent ? (
-                  <audio controls src={generatedContent} title="character-music-theme"></audio>
+                  <audio controls src={generatedContent} title={`${characterTitle}_music_theme`}></audio>
                 ) : null}
 
               {/* Action Buttons */}

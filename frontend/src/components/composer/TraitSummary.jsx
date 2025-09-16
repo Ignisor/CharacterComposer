@@ -9,7 +9,13 @@ import { Select, SelectItem } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
 
-export default function TraitSummary({ traits, onUpdate, isLoading }) {
+export default function TraitSummary({
+  traits,
+  onUpdate,
+  isLoading,
+  voiceTextUsed,
+  setVoiceTextUsed,
+}) {
   // traits is now the profile
   const [gender, setGender] = useState(traits?.gender || "unspecified");
   const [emotion, setEmotion] = useState(traits?.emotion || "neutral");
@@ -106,12 +112,23 @@ export default function TraitSummary({ traits, onUpdate, isLoading }) {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="voice-sample" className="text-white">Voice Sample</Label>
+            <Textarea
+              id="voice-sample"
+              value={voiceTextUsed || ""}
+              onChange={(e) => setVoiceTextUsed(e.target.value)}
+              className="min-h-[100px] bg-white/5 border-white/20 text-white placeholder:text-white/40 glow-border resize-none"
+              aria-label="Sample for voice generation"
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="visual-description" className="text-white">Visual Summary</Label>
             <Textarea
               id="visual-description"
               value={visualSummary || ""}
               onChange={(e) => setVisualSummary(e.target.value)}
-              className="min-h-[200px] bg-white/5 border-white/20 text-white placeholder:text-white/40 glow-border resize-none"
+              className="min-h-[100px] bg-white/5 border-white/20 text-white placeholder:text-white/40 glow-border resize-none"
               aria-label="Visual description for character appearance"
             />
           </div>

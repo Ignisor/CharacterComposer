@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Sparkles, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { COMPOSER_STEPS } from "./constants/stepper";
+import { DEFAULT_VOICE_SAMPLE } from "./constants/traits";
 import { useApiLoading } from "./hooks/useApiLoading";
 import TextInputPanel from "./components/composer/TextInputPanel";
 import TraitSummary from "./components/composer/TraitSummary";
@@ -13,16 +14,16 @@ import StepIndicator from "./components/composer/StepIndicator";
 export default function CharacterComposer() {
   const [currentStep, setCurrentStep] = useState(COMPOSER_STEPS.BASE_CONFIG);
   const [characterTitle, setCharacterTitle] = useState('');
-  const [traits, setTraits] = useState(null);
   const [profile, setProfile] = useState(null);
   const [image, setImage] = useState('');
   const [voiceOptions, setVoiceOptions] = useState([]);
-  const [voiceTextUsed, setVoiceTextUsed] = useState('');
+  const [voiceTextUsed, setVoiceTextUsed] = useState(DEFAULT_VOICE_SAMPLE);
   const [music, setMusic] = useState('');
 
   const { loadingStates, apiWithLoading } = useApiLoading();
 
   const isAnyLoading = Object.values(loadingStates).some(loading => loading);
+  const downloadCharacterTitle = characterTitle ? characterTitle.replace(/[^a-zA-Z0-9]/g, '_') : 'character';
 
   const onTextAnalysis = async (textContent) => {
     await apiWithLoading.analyzeCharacter(textContent, (characterProfile) => {
@@ -36,7 +37,7 @@ export default function CharacterComposer() {
   };
 
   const onGenerateVoice = async (updatedProfile) => {
-    await apiWithLoading.generateVoice(updatedProfile, (data) => {
+    await apiWithLoading.generateVoice(updatedProfile, voiceTextUsed, (data) => {
       setVoiceOptions(data.voice_options || []);
       setVoiceTextUsed(data.text_used || '');
     });
@@ -48,7 +49,7 @@ export default function CharacterComposer() {
 
   const onGenerateCharacter = async (updatedProfile) => {
     await onGenerateImage(updatedProfile);
-    await onGenerateVoice(updatedProfile);
+    await onGenerateVoice(updatedProfile, voiceTextUsed);
     await onGenerateMusic(updatedProfile);
 
     setProfile(updatedProfile);
@@ -72,12 +73,7 @@ export default function CharacterComposer() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-
-      // Generate filename with timestamp
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      link.download = characterTitle
-        ? `${characterTitle.replace(/[^a-zA-Z0-9]/g, '_')}_${timestamp}.png`
-        : `character_image_${timestamp}.png`;
+      link.download = `${downloadCharacterTitle}_image.png`;
 
       document.body.appendChild(link);
       link.click();
@@ -100,10 +96,10 @@ export default function CharacterComposer() {
   const resetWorkflow = () => {
     setCurrentStep(COMPOSER_STEPS.BASE_CONFIG);
     setCharacterTitle('');
-    setTraits(null);
+    setProfile(null);
     setImage('');
     setVoiceOptions([]);
-    setVoiceTextUsed('');
+    setVoiceTextUsed(DEFAULT_VOICE_SAMPLE);
     setMusic('');
   };
 
@@ -172,11 +168,14 @@ export default function CharacterComposer() {
               traits={profile}
               onUpdate={onGenerateCharacter}
               isLoading={isAnyLoading}
+              voiceTextUsed={voiceTextUsed}
+              setVoiceTextUsed={setVoiceTextUsed}
             />
           )}
 
           {currentStep === COMPOSER_STEPS.RESULT && !!profile && (
             <GenerationPanels
+              characterTitle={downloadCharacterTitle}
               traits={profile}
               image={image}
               voiceOptions={voiceOptions}
