@@ -5,54 +5,37 @@ import { MUSIC_MOOD, VOICE_TRAITS } from "../../constants/traits";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
-import {Select, SelectItem} from "../ui/select";
+import { Select, SelectItem } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import { Input } from "../ui/input";
 
 export default function TraitSummary({ traits, onUpdate, isLoading }) {
-  const [vocalTraits, setVocalTraits] = useState(traits?.voice_traits || {});
-  const [moodAtmosphere, setMoodAtmosphere] = useState(traits?.music_mood || "default");
-  const [visualTraits, setVisualTraits] = useState(traits?.visual_prompt || "");
+  // traits is now the profile
+  const [gender, setGender] = useState(traits?.gender || "unspecified");
+  const [emotion, setEmotion] = useState(traits?.emotion || "neutral");
+  const [language, setLanguage] = useState(traits?.language || "english");
+  const [accent, setAccent] = useState(traits?.accent || "none");
+  const [musicMood, setMusicMood] = useState(traits?.music_mood || "default");
+  const [visualSummary, setVisualSummary] = useState(traits?.visual_summary || "");
+  const [voiceStyle, setVoiceStyle] = useState(traits?.voice_style || "");
 
   const handleContinue = () => {
     onUpdate({
-      visual_prompt: visualTraits,
-      voice_traits: vocalTraits,
-      music_mood: moodAtmosphere
+      schema_version: 1,
+      source_text: traits?.source_text || "",
+      gender,
+      emotion,
+      language,
+      accent,
+      visual_summary: visualSummary,
+      style_tags: Array.isArray(traits?.style_tags) ? traits.style_tags : [],
+      voice_style: voiceStyle,
+      music_mood: musicMood
     });
   };
 
-  const voiceTraitsInputs = [
-    {
-      label: 'Gender',
-      options: VOICE_TRAITS.GENDER,
-      field: 'gender',
-    },
-    {
-      label: 'Voice Tone',
-      options: VOICE_TRAITS.TONE,
-      field: 'tone',
-    },
-    {
-      label: 'Character Mood',
-      options: VOICE_TRAITS.MOOD,
-      field: 'mood',
-    },
-    {
-      label: 'Emotion',
-      options: VOICE_TRAITS.EMOTION,
-      field: 'emotion',
-    },
-    {
-      label: 'Accent',
-      options: VOICE_TRAITS.ACCENT,
-      field: 'accent',
-    },
-    {
-      label: 'Language',
-      options: VOICE_TRAITS.LANGUAGE,
-      field: 'language',
-    },
-  ];
+  const genderOptions = VOICE_TRAITS.GENDER.concat(["unspecified"]);
+  const emotionOptions = VOICE_TRAITS.MOOD.concat(["tragic", "neutral"]);
 
   return (
     <motion.div
@@ -77,43 +60,57 @@ export default function TraitSummary({ traits, onUpdate, isLoading }) {
 
         <CardContent className="space-y-4">
           <div className="grid lg:grid-cols-2 gap-4">
-            {voiceTraitsInputs.map(({field, label, options}) => (
-              <div key={field} className="space-y-2">
-                <Label htmlFor={`voice-trait-${field}`} className="text-white">{label}</Label>
-                <Select
-                  id={`voice-trait-${field}`}
-                  value={vocalTraits[field] || ""}
-                  onChange={(e) => setVocalTraits((prevState) => ({...prevState, [field]: e.target.value}))}
-                  aria-label={`Select ${label.toLowerCase()}`}
-                >
-                  {options.map((mood) => (
-                    <SelectItem key={mood} value={mood}>{mood}</SelectItem>
-                  ))}
-                </Select>
-              </div>
-            ))}
+            <div className="space-y-2">
+              <Label htmlFor="gender" className="text-white">Gender</Label>
+              <Select id="gender" value={gender} onChange={(e) => setGender(e.target.value)} aria-label="Select gender">
+                {genderOptions.map((opt) => (<SelectItem key={opt} value={opt}>{opt}</SelectItem>))}
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="emotion" className="text-white">Emotion</Label>
+              <Select id="emotion" value={emotion} onChange={(e) => setEmotion(e.target.value)} aria-label="Select emotion">
+                {emotionOptions.map((opt) => (<SelectItem key={opt} value={opt}>{opt}</SelectItem>))}
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="language" className="text-white">Language</Label>
+              <Select id="language" value={language} onChange={(e) => setLanguage(e.target.value)} aria-label="Select language">
+                {VOICE_TRAITS.LANGUAGE.map((opt) => (<SelectItem key={opt} value={opt}>{opt}</SelectItem>))}
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="accent" className="text-white">Accent</Label>
+              <Select id="accent" value={accent} onChange={(e) => setAccent(e.target.value)} aria-label="Select accent">
+                {[...VOICE_TRAITS.ACCENT, "none"].map((opt) => (<SelectItem key={opt} value={opt}>{opt}</SelectItem>))}
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="voice-style" className="text-white">Voice Style</Label>
+            <Input id="voice-style" value={voiceStyle} onChange={(e) => setVoiceStyle(e.target.value)} className="bg-white/5 border-white/20 text-white placeholder:text-white/40 glow-border" placeholder="e.g., deep and measured" />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="music-mood" className="text-white">Music Mood</Label>
             <Select
               id="music-mood"
-              value={moodAtmosphere || ""}
-              onChange={(e) => setMoodAtmosphere(e.target.value)}
+              value={musicMood || ""}
+              onChange={(e) => setMusicMood(e.target.value)}
               aria-label="Select music mood"
             >
               {MUSIC_MOOD.map((mood) => (
-              <SelectItem key={mood} value={mood}>{mood}</SelectItem>
+                <SelectItem key={mood} value={mood}>{mood}</SelectItem>
               ))}
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="visual-description" className="text-white">Visual Description</Label>
+            <Label htmlFor="visual-description" className="text-white">Visual Summary</Label>
             <Textarea
               id="visual-description"
-              value={visualTraits || ""}
-              onChange={(e) => setVisualTraits(e.target.value)}
+              value={visualSummary || ""}
+              onChange={(e) => setVisualSummary(e.target.value)}
               className="min-h-[200px] bg-white/5 border-white/20 text-white placeholder:text-white/40 glow-border resize-none"
               aria-label="Visual description for character appearance"
             />

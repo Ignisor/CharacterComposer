@@ -6,9 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button, BUTTON_VARIANT } from "../ui/button";
 
 export default function VoicePlaybackPanel({
-  generatedContent,
-  isGenerating,
-  onRegenerate,
+    generatedContent,
+    isGenerating,
+    onRegenerate,
+    sampleText,
 }) {
     return (
         <Card className="glass-card glow-border h-fit">
@@ -31,15 +32,15 @@ export default function VoicePlaybackPanel({
                         animate={{ opacity: 1 }}
                         className="space-y-4"
                     >
-                      {generatedContent.map((voice) => (
-                        <audio key={voice.id} controls src={voice.audio} title={`voice-${voice.id}`}></audio>
-                      ))}
+                        {generatedContent.map((voice) => (
+                            <audio key={voice.id} controls src={voice.audio} title={`voice-${voice.id}`}></audio>
+                        ))}
 
                         {/* Sample Dialogue */}
                         <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-lg p-4">
                             <p className="text-xs text-white/60 mb-2">Sample Dialogue:</p>
                             <p className="text-white italic text-center">
-                                "{DEFAULT_VOICE_SAMPLE}"
+                                "{sampleText || DEFAULT_VOICE_SAMPLE}"
                             </p>
                         </div>
                     </motion.div>

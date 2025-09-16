@@ -20,7 +20,7 @@ export const useApiLoading = () => {
   // Generic makeRequest function with loading and error handling
   const makeRequest = async (operation, requestFn, onSuccess) => {
     setLoadingStates(prev => ({ ...prev, [operation]: true }));
-    
+
     try {
       const result = await requestFn();
       onSuccess(result);
@@ -43,18 +43,18 @@ export const useApiLoading = () => {
       );
     },
 
-    generateImage: (prompt, onSuccess) => {
+    generateImage: (characterProfile, onSuccess) => {
       return makeRequest(
         API_OPERATIONS.GENERATING_IMAGE,
-        () => characterAPI.generateImage(prompt),
+        () => characterAPI.generateImage(characterProfile),
         onSuccess
       );
     },
 
-    generateVoice: (traits, onSuccess) => {
+    generateVoice: (characterProfile, onSuccess) => {
       return makeRequest(
         API_OPERATIONS.GENERATING_VOICE,
-        () => characterAPI.generateVoice(traits),
+        () => characterAPI.generateVoice(characterProfile),
         onSuccess
       );
     },

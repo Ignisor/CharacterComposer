@@ -3,23 +3,24 @@ import { motion } from "framer-motion";
 import { Button, BUTTON_VARIANT } from "../ui/button";
 import { RotateCcw, Loader2 } from "lucide-react";
 
-import {API_OPERATIONS} from "../../constants/api";
+import { API_OPERATIONS } from "../../constants/api";
 import CharacterImagePanel from "./CharacterImagePanel";
 import VoicePlaybackPanel from "./VoicePlaybackPanel";
 import MusicSoundtrackPanel from "./MusicSoundtrackPanel";
 
 export default function GenerationPanels({
-  traits,
-  image,
-  voiceOptions,
-  music,
-  loadingStates,
-  isAnyLoading,
-  onRegenerateAll,
-  onRegenerateImage,
-  onRegenerateVoice,
-  onRegenerateMusic,
-  onDownloadImage,
+    traits,
+    image,
+    voiceOptions,
+    voiceTextUsed,
+    music,
+    loadingStates,
+    isAnyLoading,
+    onRegenerateAll,
+    onRegenerateImage,
+    onRegenerateVoice,
+    onRegenerateMusic,
+    onDownloadImage,
 }) {
     return (
         <motion.div
@@ -37,27 +38,28 @@ export default function GenerationPanels({
             <div className="grid lg:grid-cols-3 gap-6">
                 {/* Character Image Panel */}
                 <CharacterImagePanel
-                  generatedContent={{
-                    url: image,
-                    prompt: traits.visual_prompt,
-                }}
-                  isGenerating={loadingStates[API_OPERATIONS.GENERATING_IMAGE]}
-                  onRegenerate={onRegenerateImage}
-                  onDownloadImage={onDownloadImage}
+                    generatedContent={{
+                        url: image,
+                        prompt: traits.visual_summary,
+                    }}
+                    isGenerating={loadingStates[API_OPERATIONS.GENERATING_IMAGE]}
+                    onRegenerate={onRegenerateImage}
+                    onDownloadImage={onDownloadImage}
                 />
 
                 {/* Voice Playback Panel */}
                 <VoicePlaybackPanel
-                  generatedContent={voiceOptions}
-                  isGenerating={loadingStates[API_OPERATIONS.GENERATING_VOICE]}
-                  onRegenerate={onRegenerateVoice}
+                    generatedContent={voiceOptions}
+                    isGenerating={loadingStates[API_OPERATIONS.GENERATING_VOICE]}
+                    onRegenerate={onRegenerateVoice}
+                    sampleText={voiceTextUsed}
                 />
 
                 {/* Music Soundtrack Panel */}
                 <MusicSoundtrackPanel
-                  generatedContent={music}
-                  isGenerating={loadingStates[API_OPERATIONS.GENERATING_MUSIC]}
-                  onRegenerate={onRegenerateMusic}
+                    generatedContent={music}
+                    isGenerating={loadingStates[API_OPERATIONS.GENERATING_MUSIC]}
+                    onRegenerate={onRegenerateMusic}
                 />
             </div>
 
